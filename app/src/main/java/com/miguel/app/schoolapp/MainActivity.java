@@ -25,12 +25,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        showToolbar("", false, false);
         context = this;
 
         try {
             dbHelper = new DBHelper(context);
-
-            showToolbar("", false, false);
             inserToSQL();
 
         } catch (Exception error) {
