@@ -9,10 +9,12 @@
 
     <include layout="@layout/toolbar_custom" />
 
-    <ListView
-        android:id="@+id/listStudent"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp"
+        android:text="Se guardi sopra, vedrai che Il Toolbar è custom"
         />
 
 </LinearLayout>
