@@ -19,7 +19,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     Context context;
-    ArrayList<String> studentSAMPLE;
     DBHelper dbHelper;
 
     @Override
@@ -32,11 +31,8 @@ public class MainActivity extends AppCompatActivity {
             dbHelper = new DBHelper(context);
 
             showToolbar("", false, false);
-            sampleList(); // Popola arrayList
-
             inserToSQL();
 
-            loadList();
         } catch (Exception error) {
             Log.e("MITO_TAG", "err: " + error.getMessage());
         }
@@ -56,15 +52,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void loadList() {
-        ListView lista = (ListView) findViewById(R.id.listStudent);
-        StudentAdapter adapter = new StudentAdapter(context, studentSAMPLE);
-        lista.setAdapter(adapter);
-    }
+//    private void loadList() {
+//        ListView lista = (ListView) findViewById(R.id.listStudent);
+//        StudentAdapter adapter = new StudentAdapter(context, studentSAMPLE);
+//        lista.setAdapter(adapter);
+//    }
 
     // Creo un arraylist<String> per popolare la listview tramite l'adapter
     public void sampleList() {
-        studentSAMPLE = new ArrayList<String>();
+        ArrayList<String> studentSAMPLE = new ArrayList<>();
         studentSAMPLE.add("Maria");
         studentSAMPLE.add("Pedro");
         studentSAMPLE.add("Ramon");
