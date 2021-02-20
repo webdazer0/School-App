@@ -2,16 +2,15 @@ package com.miguel.app.schoolapp.model;
 
 import android.provider.BaseColumns;
 
-public class ListDB {
+public class StudentDB {
 
-    ListDB() {}
+    StudentDB() {}
 
     public static class Data implements BaseColumns {
         public static final String TABLE_NAME = "student";
         public static final String COL_NAME = "nome";
         public static final String COL_LASTNAME = "cognome";
         public static final String COL_DATE = "data";
-
     }
 
     public static final String SQL_CREATE_TABLE =

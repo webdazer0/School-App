@@ -8,16 +8,16 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.miguel.app.schoolapp.R;
+import com.miguel.app.schoolapp.model.Student;
 
 import java.util.ArrayList;
 
 public class StudentAdapter extends BaseAdapter {
     private Context context;
-    private ArrayList<String> students;
+    private ArrayList<Student> students;
     private LayoutInflater inflater;
 
-
-    public StudentAdapter(Context context, ArrayList<String> students) {
+    public StudentAdapter(Context context, ArrayList<Student> students) {
         this.context = context;
         this.students = students;
         inflater = LayoutInflater.from(context);
@@ -30,7 +30,7 @@ public class StudentAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return students.get(position); // Ritorna la classe Student come Object
     }
 
     @Override
@@ -43,13 +43,15 @@ public class StudentAdapter extends BaseAdapter {
 
         convertView = inflater.inflate(R.layout.student_custom, null);
 
-        TextView nameStudent = (TextView)convertView.findViewById(R.id.nameStudent);
+        TextView name = convertView.findViewById(R.id.name);
+        TextView lastName = convertView.findViewById(R.id.lastName);
+        TextView date = convertView.findViewById(R.id.date);
 
-        String VEAMOS = (String) nameStudent.getText();
+        String name_for_debug = students.get(position).getName(); // Per controllare che riceva il valore, e visualizzarlo in modalità DEBUG
 
-        String DEBUG = students.get(position);
-
-        nameStudent.setText(students.get(position));
+        name.setText(students.get(position).getName());
+        lastName.setText(students.get(position).getLastName());
+        date.setText(students.get(position).getDate());
 
         return convertView;
     }
