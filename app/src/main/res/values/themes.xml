@@ -23,4 +23,16 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+
+    <style name="EditTextDark" parent="Theme.AppCompat.Light">
+<!--        <item name="android:textColorHint">#9e9e9e</item>-->
+        <item name="android:textColorHint">#3F51B5</item>
+        <item name="android:textSize">18sp</item>
+<!--        <item name="android:textColorPrimary">#03A9F4</item>-->
+        <item name="colorAccent">#4CAF50</item>
+<!--        <item name="colorControlNormal">#c5c5c5</item>-->
+        <item name="colorControlNormal">#FF9800</item>
+        <item name="colorControlActivated">#FF0000</item>
+    </style>
 </resources>
