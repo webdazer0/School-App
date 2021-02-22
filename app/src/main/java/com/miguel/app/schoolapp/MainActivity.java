@@ -11,7 +11,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.miguel.app.schoolapp.model.DBHelper;
@@ -19,6 +23,8 @@ import com.miguel.app.schoolapp.model.Student;
 import com.miguel.app.schoolapp.model.StudentDB;
 import com.miguel.app.schoolapp.view.DetailsActivity;
 import com.miguel.app.schoolapp.view.adapter.StudentAdapter;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -28,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Student> studentSAMPLE;
     DBHelper dbHelper;
     FloatingActionButton addBtn;
+    ListView lista;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +60,19 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MITO_TAG", "err: " + error.getMessage());
         }
 
+        lista.setOnItemClickListener((parent, view, position, id) -> {
+
+            Log.i("MITO_TAG", "Hai clicatto il idssssssss: " + position + " e anche: id: " + id);
+
+            Intent intent = new Intent(context, DetailsActivity.class);
+
+            Intent sampleIntent = intent.putExtra("rambo", id);
+            Intent sampleIntent2 = intent.putExtra("rambo", id);
+
+            startActivity(intent);
+
+        });
+
 
     }
 
@@ -76,8 +96,9 @@ public class MainActivity extends AppCompatActivity {
             String tmpNome = cursor.getString(cursor.getColumnIndex(StudentDB.Data.COL_NAME));
             String tmpCognome = cursor.getString(cursor.getColumnIndex(StudentDB.Data.COL_LASTNAME));
             String tmpData = cursor.getString(cursor.getColumnIndex(StudentDB.Data.COL_DATE));
+            int tmpID = cursor.getInt(cursor.getColumnIndex(StudentDB.Data._ID));
 
-            studentSAMPLE.add(new Student(tmpNome, tmpCognome, tmpData));
+            studentSAMPLE.add(new Student(tmpNome, tmpCognome, tmpData, tmpID));
         }
         cursor.close();
     }
@@ -87,18 +108,18 @@ public class MainActivity extends AppCompatActivity {
 //        DELETE FROM student  WHERE _id = 4
         String customQuery = "DELETE FROM " + StudentDB.Data.TABLE_NAME + " WHERE " + StudentDB.Data._ID + "=2";
         boolean result = db.rawQuery(customQuery, null).moveToFirst();
-        Log.i("MITO_TAG", "onCreate: " + result);
+        Log.i("MITO_TAG", "deleteSQL: " + result);
     }
 
     private void loadList() {
-        ListView lista = (ListView) findViewById(R.id.listStudent);
+        lista = (ListView) findViewById(R.id.listStudent);
         StudentAdapter adapter = new StudentAdapter(context, studentSAMPLE);
         lista.setAdapter(adapter);
     }
 
     // Creo un arraylist<String> per popolare la listview tramite l'adapter
     public void sampleList() {
-        studentSAMPLE.add(new Student("Lionel", "Messi", "13/05/2021"));
+        studentSAMPLE.add(new Student("Lionel", "Messi", "13/05/2021", 998));
     }
 
 

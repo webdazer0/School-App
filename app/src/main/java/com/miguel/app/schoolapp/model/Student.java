@@ -4,11 +4,13 @@ public class Student {
     private String name;
     private String lastName;
     private String date;
+    private int ID;
 
-    public Student(String name, String lastName, String date) {
+    public Student(String name, String lastName, String date, int ID) {
         setName(name);
         setLastName(lastName);
         setDate(date);
+        setID(ID);
     }
 
     public String getName() {
@@ -35,6 +37,15 @@ public class Student {
 
     public Student setDate(String date) {
         this.date = date;
+        return this;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public Student setID(int ID) {
+        this.ID = ID;
         return this;
     }
 

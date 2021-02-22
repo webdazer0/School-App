@@ -5,6 +5,7 @@
     android:orientation="horizontal"
     android:paddingVertical="10dp"
     android:paddingLeft="15dp"
+    android:descendantFocusability="blocksDescendants"
     android:weightSum="6">
 
     <LinearLayout
@@ -49,6 +50,7 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/btn_edit"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="@drawable/edit"
@@ -56,6 +58,7 @@
             android:text="" />
 
         <Button
+            android:id="@+id/btn_delete"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_gravity="center"
