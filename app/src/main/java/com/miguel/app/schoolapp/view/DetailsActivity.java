@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.miguel.app.schoolapp.R;
 import com.miguel.app.schoolapp.model.DBHelper;
@@ -74,10 +75,14 @@ public class DetailsActivity extends AppCompatActivity {
         lastname = ((EditText) findViewById(R.id.add_lastname)).getText().toString();
         date = ((EditText) findViewById(R.id.add_date)).getText().toString();
 
-        if (id > 0 && api_id.length() > 0) {
-            updateStudentAPI(name, lastname, date);
+        if(!name.equals("") && !lastname.equals("") && !date.equals("")) {
+            if (id > 0 && api_id.length() > 0) {
+                updateStudentAPI(name, lastname, date);
+            } else {
+                createStudentAPI(name, lastname, date);
+            }
         } else {
-            createStudentAPI(name, lastname, date);
+            Toast.makeText(context, "Devi compilare tutti i campi!", Toast.LENGTH_SHORT).show();
         }
 
     };
