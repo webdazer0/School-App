@@ -17,7 +17,6 @@ import com.miguel.app.schoolapp.R;
 import com.miguel.app.schoolapp.model.DBHelper;
 import com.miguel.app.schoolapp.model.StudentDB;
 import com.miguel.app.schoolapp.service.ApiRequest;
-import com.miguel.app.schoolapp.service.UpdateDBRemote;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
