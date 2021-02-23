@@ -1,8 +1,6 @@
 package com.miguel.app.schoolapp.view.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +12,7 @@ import android.widget.Toast;
 import com.miguel.app.schoolapp.R;
 import com.miguel.app.schoolapp.model.DBHelper;
 import com.miguel.app.schoolapp.model.Student;
-import com.miguel.app.schoolapp.model.StudentDB;
+import com.miguel.app.schoolapp.service.ApiRequest;
 
 import java.util.ArrayList;
 
@@ -42,6 +40,11 @@ public class StudentAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return students.get(position).getID(); // Ritorna l'id (primary key)
+//        return 0;
+    }
+
+    public String getItemApiId(int position) {
+        return students.get(position).getAPI_ID(); // Ritorna l'id (primary key) API
     }
 
     @Override
@@ -63,10 +66,9 @@ public class StudentAdapter extends BaseAdapter {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "Hai clicatto il idbtn: " + position + " e anche: id: " + getItemId(position) , Toast.LENGTH_SHORT).show();
-                Log.i("MITO_TAG", "Hai clicatto il idbtn: " + position + " e anche: id: " + getItemId(position));
-
-                deleteSQL(getItemId(position));
+                Log.i("MITO_TAG", "Hai clicatto il idbtn: " + getItemApiId(position) + " e anche: id: " + getItemId(position));
+                deleteStudentAPI(context, getItemApiId(position));
+//                deleteSQL(getItemId(position));
             }
         });
 
@@ -74,15 +76,14 @@ public class StudentAdapter extends BaseAdapter {
     }
 
     private void deleteSQL(long _ID) {
-//        DELETE FROM student  WHERE _id = 4
-
         DBHelper dbHelper = new DBHelper(context);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        String customQuery = "DELETE FROM " + StudentDB.Data.TABLE_NAME + " WHERE " + StudentDB.Data._ID + "=" + _ID;
-        boolean result = db.rawQuery(customQuery, null).moveToFirst();
-        Log.i("MITO_TAG", "deleteSQL: " + result);
+        dbHelper.delete((int) _ID);
+    }
 
-
+    private void deleteStudentAPI(Context context, String api_id) {
+//      Eliminazione dati online
+        ApiRequest apiRequest = new ApiRequest(context, "delete", api_id);
+        apiRequest.execute();
     }
 
 }

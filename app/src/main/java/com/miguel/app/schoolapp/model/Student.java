@@ -5,12 +5,14 @@ public class Student {
     private String lastName;
     private String date;
     private int ID;
+    private String API_ID;
 
-    public Student(String name, String lastName, String date, int ID) {
+    public Student(String name, String lastName, String date, int ID, String API_ID) {
         setName(name);
         setLastName(lastName);
         setDate(date);
         setID(ID);
+        setAPI_ID(API_ID);
     }
 
     public String getName() {
@@ -46,6 +48,15 @@ public class Student {
 
     public Student setID(int ID) {
         this.ID = ID;
+        return this;
+    }
+
+    public String getAPI_ID() {
+        return API_ID;
+    }
+
+    public Student setAPI_ID(String API_ID) {
+        this.API_ID = API_ID;
         return this;
     }
 

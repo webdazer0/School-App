@@ -3,11 +3,9 @@ package com.miguel.app.schoolapp.view;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,21 +15,27 @@ import android.widget.TextView;
 
 import com.miguel.app.schoolapp.R;
 import com.miguel.app.schoolapp.model.DBHelper;
-import com.miguel.app.schoolapp.model.Student;
 import com.miguel.app.schoolapp.model.StudentDB;
+import com.miguel.app.schoolapp.service.ApiRequest;
+import com.miguel.app.schoolapp.service.UpdateDBRemote;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DetailsActivity extends AppCompatActivity {
 
     DBHelper dbHelper;
     Context context;
     int id;
+    String api_id;
 
     Button save;
-
     String name;
     String lastname;
     String date;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,25 +43,25 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
 
         Intent intent = getIntent();
-        id = (int)intent.getLongExtra("rambo", 0);
+        id = (int) intent.getLongExtra("sqlID", 0);
 
+        save = findViewById(R.id.add_btn_save);
+        Log.i("MITO_TAG", "id: " + id);
 
         context = this;
 
         try {
             dbHelper = new DBHelper(context);
 
-
-            if(id > 0) {
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                selectSQL(db, id);
-
+            if (id > 0) {
+                api_id = dbHelper.getApiID(id);
+                getDataById(id);
                 showToolbar("", true, 3); // setTitle = nome
+                save.setText("Aggiorna");
             } else {
                 showToolbar("Aggiungi studente", true, 2);
             }
 
-            save = findViewById(R.id.add_btn_save);
             save.setOnClickListener(saveStudentEvent);
 
         } catch (Exception error) {
@@ -66,53 +70,60 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
 
-
     View.OnClickListener saveStudentEvent = v -> {
-        name = ((EditText)findViewById(R.id.add_name)).getText().toString();
-        lastname = ((EditText)findViewById(R.id.add_lastname)).getText().toString();
-        date = ((EditText)findViewById(R.id.add_date)).getText().toString();
+        name = ((EditText) findViewById(R.id.add_name)).getText().toString();
+        lastname = ((EditText) findViewById(R.id.add_lastname)).getText().toString();
+        date = ((EditText) findViewById(R.id.add_date)).getText().toString();
 
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        inserToSQL(db, name, lastname, date);
-    };
-
-    private void inserToSQL(SQLiteDatabase db, String name, String lastname, String date) {
-        ContentValues values = new ContentValues();
-        values.put(StudentDB.Data.COL_NAME, name);
-        values.put(StudentDB.Data.COL_LASTNAME, lastname);
-        values.put(StudentDB.Data.COL_DATE, date);
-
-        if(id > 0) {
-            String myQueryUpdate = "UPDATE people SET (receive_qty=20,pub_lang='Hindi',receive_dt='2008-07-10') WHERE name = Jane";
-            long lastId = db.update(StudentDB.Data.TABLE_NAME, values, "" + StudentDB.Data._ID +"=?", new String[]{String.valueOf(id)});
-            Log.i("MITO_TAG", "id Studente: " + lastId);
+        if (id > 0 && api_id.length() > 0) {
+            updateStudentAPI(name, lastname, date);
         } else {
-            long lastId = db.insert(StudentDB.Data.TABLE_NAME, null, values);
-            Log.i("MITO_TAG", "id Studente appena creato: " + lastId);
+            createStudentAPI(name, lastname, date);
         }
 
+    };
+
+    private void createStudentAPI(String name, String lastname, String date) {
+//      salvataggio online
+        ApiRequest request = new ApiRequest(context);
+
+        List<NameValuePair> values = new ArrayList<>();
+        values.add(new BasicNameValuePair("nome", name));
+        values.add(new BasicNameValuePair("cognome", lastname));
+        values.add(new BasicNameValuePair("data", date));
+
+        request.execute(values);
+    }
+
+    private void updateStudentAPI(String name, String lastname, String date) {
+//      aggiornamento dati online
+        ApiRequest request = new ApiRequest(context, "put", api_id);
+
+        List<NameValuePair> values = new ArrayList<>();
+        values.add(new BasicNameValuePair("nome", name));
+        values.add(new BasicNameValuePair("cognome", lastname));
+        values.add(new BasicNameValuePair("data", date));
+
+        request.execute(values);
     }
 
 
-    private void selectSQL(SQLiteDatabase db, int id) {
 
-        String customQuery = "SELECT * FROM " + StudentDB.Data.TABLE_NAME + " WHERE " + StudentDB.Data._ID + "=" + id;
 
-        Cursor cursor = db.rawQuery(customQuery, null);
+    private void getDataById(int id) {
+        Cursor cursor = dbHelper.selectById(id);
 
         while (cursor.moveToNext()) {
             String tmpNome = cursor.getString(cursor.getColumnIndex(StudentDB.Data.COL_NAME));
             String tmpCognome = cursor.getString(cursor.getColumnIndex(StudentDB.Data.COL_LASTNAME));
             String tmpData = cursor.getString(cursor.getColumnIndex(StudentDB.Data.COL_DATE));
-            int tmpID = cursor.getInt(cursor.getColumnIndex(StudentDB.Data._ID));
 
-            ((TextView)findViewById(R.id.add_name)).setText(tmpNome);
-            ((TextView)findViewById(R.id.add_lastname)).setText(tmpCognome);
-            ((TextView)findViewById(R.id.add_date)).setText(tmpData);
+            ((TextView) findViewById(R.id.add_name)).setText(tmpNome);
+            ((TextView) findViewById(R.id.add_lastname)).setText(tmpCognome);
+            ((TextView) findViewById(R.id.add_date)).setText(tmpData);
         }
         cursor.close();
     }
-
 
 
 
@@ -125,9 +136,10 @@ public class DetailsActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle(getResources().getString(R.string.app_name)); // Se hasTitle è false, mostra il nome del'app nella Toolbar
                 break;
             case 2:
-                getSupportActionBar().setTitle(title); break;
+                getSupportActionBar().setTitle(title);
+                break;
             case 3:
-                getSupportActionBar().setTitle(((EditText)findViewById(R.id.add_name)).getText().toString());
+                getSupportActionBar().setTitle(((EditText) findViewById(R.id.add_name)).getText().toString());
                 break;
         }
 

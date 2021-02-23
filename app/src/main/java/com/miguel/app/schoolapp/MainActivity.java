@@ -21,6 +21,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.miguel.app.schoolapp.model.DBHelper;
 import com.miguel.app.schoolapp.model.Student;
 import com.miguel.app.schoolapp.model.StudentDB;
+import com.miguel.app.schoolapp.service.HTTPManager;
+import com.miguel.app.schoolapp.service.SincronizzaDati;
 import com.miguel.app.schoolapp.view.DetailsActivity;
 import com.miguel.app.schoolapp.view.adapter.StudentAdapter;
 
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton addBtn;
     ListView lista;
 
+    StudentAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,12 +50,12 @@ public class MainActivity extends AppCompatActivity {
         try {
             dbHelper = new DBHelper(context);
             showToolbar("", false, false);
-            sampleList(); // Popola arrayList di prova
+//            sampleList(); // Popola arrayList di prova
 
             SQLiteDatabase db = dbHelper.getWritableDatabase();
-            selectSQL(db);
 
             loadList();
+            getData();
 
             addBtn = findViewById(R.id.fab);
             addBtn.setOnClickListener(addBtnEvent);
@@ -62,64 +66,45 @@ public class MainActivity extends AppCompatActivity {
 
         lista.setOnItemClickListener((parent, view, position, id) -> {
 
-            Log.i("MITO_TAG", "Hai clicatto il idssssssss: " + position + " e anche: id: " + id);
-
             Intent intent = new Intent(context, DetailsActivity.class);
-
-            Intent sampleIntent = intent.putExtra("rambo", id);
-            Intent sampleIntent2 = intent.putExtra("rambo", id);
-
+            intent.putExtra("sqlID", id);
             startActivity(intent);
-
         });
 
-
     }
 
-    private void inserToSQL(SQLiteDatabase db) {
-        ContentValues values = new ContentValues();
-        values.put(StudentDB.Data.COL_NAME, "Miguel");
-        values.put(StudentDB.Data.COL_LASTNAME, "Cruzado");
-        values.put(StudentDB.Data.COL_DATE, "13/02/2019");
 
-        long lastId = db.insert(StudentDB.Data.TABLE_NAME, null, values);
-        Log.i("MITO_TAG", "onCreate: " + lastId);
-    }
-
-    private void selectSQL(SQLiteDatabase db) {
-
-        String customQuery = "SELECT * FROM " + StudentDB.Data.TABLE_NAME;
-
-        Cursor cursor = db.rawQuery(customQuery, null);
+    private void getData() {
+        Cursor cursor = dbHelper.select();
 
         while (cursor.moveToNext()) {
             String tmpNome = cursor.getString(cursor.getColumnIndex(StudentDB.Data.COL_NAME));
             String tmpCognome = cursor.getString(cursor.getColumnIndex(StudentDB.Data.COL_LASTNAME));
             String tmpData = cursor.getString(cursor.getColumnIndex(StudentDB.Data.COL_DATE));
             int tmpID = cursor.getInt(cursor.getColumnIndex(StudentDB.Data._ID));
+            String tmpAPI_ID = cursor.getString(cursor.getColumnIndex(StudentDB.Data.COL_API_ID));
 
-            studentSAMPLE.add(new Student(tmpNome, tmpCognome, tmpData, tmpID));
+            studentSAMPLE.add(new Student(tmpNome, tmpCognome, tmpData, tmpID, tmpAPI_ID));
         }
         cursor.close();
+
+        adapter = new StudentAdapter(context, studentSAMPLE);
+        lista.setAdapter(adapter);
     }
 
-
-    private void deleteSQL(SQLiteDatabase db) {
-//        DELETE FROM student  WHERE _id = 4
-        String customQuery = "DELETE FROM " + StudentDB.Data.TABLE_NAME + " WHERE " + StudentDB.Data._ID + "=2";
-        boolean result = db.rawQuery(customQuery, null).moveToFirst();
-        Log.i("MITO_TAG", "deleteSQL: " + result);
-    }
 
     private void loadList() {
+
         lista = (ListView) findViewById(R.id.listStudent);
-        StudentAdapter adapter = new StudentAdapter(context, studentSAMPLE);
-        lista.setAdapter(adapter);
+        SincronizzaDati sd = new SincronizzaDati(studentSAMPLE, adapter, lista, context, dbHelper);
+//        sd.execute("https://torregatti.com/dati.php?opzione=mysql&key=" + HTTPManager.key);
+        sd.execute("https://alunni.herokuapp.com/api/alunni");
+
     }
 
     // Creo un arraylist<String> per popolare la listview tramite l'adapter
     public void sampleList() {
-        studentSAMPLE.add(new Student("Lionel", "Messi", "13/05/2021", 998));
+//        studentSAMPLE.add(new Student("Lionel", "Messi", "13/05/2021", "998"));
     }
 
 

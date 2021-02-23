@@ -1,4 +1,4 @@
-package com.miguel.app.schoolapp.service;
+ package com.miguel.app.schoolapp.service;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.miguel.app.schoolapp.model.DBHelper;
 import com.miguel.app.schoolapp.model.Student;
 import com.miguel.app.schoolapp.view.adapter.StudentAdapter;
 
@@ -24,11 +25,14 @@ public class SincronizzaDati extends AsyncTask<String, String, List<String>> {
     Context context;
     ProgressDialog dialog;
 
-    public SincronizzaDati(ArrayList<Student> students, StudentAdapter adapter, ListView elenco, Context context) {
+    DBHelper dbHelper;
+
+    public SincronizzaDati(ArrayList<Student> students, StudentAdapter adapter, ListView elenco, Context context, DBHelper dbHelper) {
         this.students = students;
         this.adapter = adapter;
         this.elenco = elenco;
         this.context = context;
+        this.dbHelper = dbHelper;
         this.dialog = new ProgressDialog(context);
     }
 
@@ -39,10 +43,9 @@ public class SincronizzaDati extends AsyncTask<String, String, List<String>> {
     }
 
     @Override
-    protected List<String> doInBackground(String... indirizzi) {
+    protected ArrayList<String> doInBackground(String... indirizzi) {
 
-        ArrayList<String> dati = new ArrayList<String>();
-
+        ArrayList<String> dati = new ArrayList<>();
         String tmp = "";
 
         int k = 0;
@@ -55,12 +58,11 @@ public class SincronizzaDati extends AsyncTask<String, String, List<String>> {
                 tmp = HTTPManager.get(url);
                 publishProgress(url, String.valueOf(Math.round(100 * (++k) / tot)) + "%");
                 dati.add(tmp);
-
             }
 
         } catch (Exception e) {
             for(StackTraceElement ste : e.getStackTrace()) {
-                Log.e("PETAR_DEBUG", "Errore SincronizzaDati: " + ste.toString());
+                Log.e("MITO_DEBUG", "Errore SincronizzaDati: " + ste.toString());
             }
         }
 
@@ -70,34 +72,31 @@ public class SincronizzaDati extends AsyncTask<String, String, List<String>> {
     @Override
     protected void onProgressUpdate(String... values) {
         //super.onProgressUpdate(values);
-        Log.i("PETAR_DEBUG","Stato sync: " + values[0]);
+        Log.i("MITO_DEBUG","Stato sync: " + values[0]);
         dialog.setMessage("Caricamento " + values[1]);
     }
 
     @Override
     protected void onPostExecute(List<String> dati) {
         //super.onPostExecute(s);
+
+        dbHelper.cleanDb(); // CANCELLO LA TABELLA PER RIPOPOLARLA
+
         for( String dato : dati ) {
-            Log.i("PETAR_DEBUG", "JSON da Sincronizza: " + dato);
+            Log.i("MITO_DEBUG", "JSON da API / ENDPOINT: " + dato);
 
             try {
-
                 JSONArray json = new JSONArray(dato);
                 for (int i = 0; i < json.length(); i++) {
                     JSONObject obj = json.getJSONObject(i);
-                    Log.i("PETAR_DEBUG", "nome: " + obj.getString("nome"));
-                    students.add(new Student(obj.getString("nome"), obj.getString("cognome"), obj.getString("data"), obj.getInt("_id")));
+
+                    dbHelper.insert(obj.getString("nome"), obj.getString("cognome"), obj.getString("data"), obj.getString("_id"));
                 }
 
             } catch (Exception e) {
-                Log.e("PETAR_DEBUG", "JSON errore: " + e.getMessage());
+                Log.e("MITO_DEBUG", "JSON errore: " + e.getMessage());
             }
-
         }
-
-        adapter = new StudentAdapter(context, students);
-
-        elenco.setAdapter(adapter);
 
         if(dialog.isShowing()) {
             dialog.dismiss();
