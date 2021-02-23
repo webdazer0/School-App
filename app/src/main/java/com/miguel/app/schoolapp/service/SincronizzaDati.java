@@ -21,16 +21,16 @@ public class SincronizzaDati extends AsyncTask<String, String, List<String>> {
 
     ArrayList<Student> students;
     StudentAdapter adapter;
-    ListView elenco;
+    ListView lista;
     Context context;
     ProgressDialog dialog;
 
     DBHelper dbHelper;
 
-    public SincronizzaDati(ArrayList<Student> students, StudentAdapter adapter, ListView elenco, Context context, DBHelper dbHelper) {
+    public SincronizzaDati(ArrayList<Student> students, StudentAdapter adapter, ListView lista, Context context, DBHelper dbHelper) {
         this.students = students;
         this.adapter = adapter;
-        this.elenco = elenco;
+        this.lista = lista;
         this.context = context;
         this.dbHelper = dbHelper;
         this.dialog = new ProgressDialog(context);
@@ -43,17 +43,16 @@ public class SincronizzaDati extends AsyncTask<String, String, List<String>> {
     }
 
     @Override
-    protected ArrayList<String> doInBackground(String... indirizzi) {
+    protected ArrayList<String> doInBackground(String... urls) {
 
         ArrayList<String> dati = new ArrayList<>();
         String tmp = "";
 
         int k = 0;
-        int tot = indirizzi.length;
+        int tot = urls.length;
 
         try {
-
-            for (String url : indirizzi) {
+            for (String url : urls) {
 
                 tmp = HTTPManager.get(url);
                 publishProgress(url, String.valueOf(Math.round(100 * (++k) / tot)) + "%");
@@ -78,8 +77,6 @@ public class SincronizzaDati extends AsyncTask<String, String, List<String>> {
 
     @Override
     protected void onPostExecute(List<String> dati) {
-        //super.onPostExecute(s);
-
         dbHelper.cleanDb(); // CANCELLO LA TABELLA PER RIPOPOLARLA
 
         for( String dato : dati ) {

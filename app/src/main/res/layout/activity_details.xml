@@ -12,45 +12,52 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="12dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Light"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:theme="@style/EditTextDark">
+            android:hint="Nome">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/add_name"
+                android:inputType="textCapWords"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="nome" />
+                android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:theme="@style/EditTextDark">
+            android:layout_marginTop="5dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/add_lastname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="cognome" />
+                android:inputType="textCapWords"
+                android:hint="Cognome"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:theme="@style/EditTextDark">
+            app:counterEnabled="false"
+            app:endIconMode="none"
+            android:hint="Data"
+            app:helperTextEnabled="true"
+            app:helperText="Inserisci data (esempio: 21/08/2012)"
+
+            android:layout_marginTop="5dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/add_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="data" />
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
